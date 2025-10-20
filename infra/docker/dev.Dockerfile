@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile
 FROM debian:bookworm-slim
 
 ENV DEBIAN_FRONTEND=noninteractive LANG=C.UTF-8 LC_ALL=C.UTF-8
