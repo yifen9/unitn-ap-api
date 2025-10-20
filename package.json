@@ -11,15 +11,23 @@
 		"tf:apply:dev": "terraform -chdir=infra/terraform apply -var-file=envs/dev.tfvars -auto-approve",
 		"tf:destroy:dev": "terraform -chdir=infra/terraform destroy -var-file=envs/dev.tfvars -auto-approve",
 		"tf:output:dev": "terraform -chdir=infra/terraform output",
-		"tf:rebuild:dev": "pnpm tf:destroy:dev && pnpm tf:apply:dev"
+		"tf:rebuild:dev": "pnpm tf:destroy:dev && pnpm tf:apply:dev",
+		"oas:lint": "openapi lint openapi/v1.yaml",
+		"oas:bundle": "openapi bundle openapi/v1.yaml -o openapi/bundle.yaml",
+		"oas:docs": "openapi build-docs openapi/v1.yaml -o openapi/docs.html",
+		"oas:serve": "serve openapi -l 8080",
+		"oas:mock": "prism mock -p 4010 openapi/v1.yaml"
 	},
 	"dependencies": {
 		"@biomejs/biome": "^2.2.6",
 		"@cloudflare/vitest-pool-workers": "^0.9.13",
 		"@cloudflare/workers-types": "^4.20251014.0",
+		"@redocly/cli": "^2.7.0",
+		"@stoplight/prism-cli": "^5.14.2",
 		"drizzle-kit": "^0.31.5",
 		"drizzle-orm": "^0.36.4",
 		"hono": "^4.10.1",
+		"serve": "^14.2.5",
 		"typescript": "^5.9.3",
 		"vitest": "^3.2.4",
 		"wrangler": "^4.43.0"

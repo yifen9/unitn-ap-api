@@ -1,0 +1,131 @@
+openapi: 3.1.0
+info:
+  title: unitn-ap-api
+  version: 0.1.0
+  license:
+    name: MIT
+    identifier: MIT
+servers:
+  - url: https://dev.api.ap.unitn.yifen9.li
+security: []
+paths:
+  /v1/healthz:
+    get:
+      summary: Health check
+      operationId: getHealth
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  ts:
+                    type: integer
+                    format: int64
+                required: [ok, ts]
+              examples:
+                ok:
+                  value: { ok: true, ts: 1739999999999 }
+        "400":
+          description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+  /v1/invitations:
+    post:
+      summary: Create an invitation request
+      operationId: createInvitation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/InvitationCreateRequest"
+            examples:
+              sample:
+                value:
+                  githubId: octocat
+                  email: alice.rossi@studenti.unitn.it
+                  team: TEAM_A
+                  role: captain
+      responses:
+        "202":
+          description: accepted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/InvitationCreateResponse"
+              examples:
+                accepted:
+                  value:
+                    id: inv_01JABCDE123456789
+                    status: pending
+        "400":
+          description: bad request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "409":
+          description: conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "429":
+          description: too many requests
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+        "500":
+          description: server error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error"
+components:
+  schemas:
+    InvitationCreateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        githubId:
+          type: string
+          minLength: 1
+        email:
+          type: string
+          format: email
+          pattern: "^[A-Za-z0-9._%+-]+@studenti\\.unitn\\.it$"
+        team:
+          type: string
+          enum: [TEAM_A, TEAM_B, TEAM_C]
+        role:
+          type: string
+          enum: [captain, member]
+      required: [githubId, email, team, role]
+    InvitationCreateResponse:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+          enum: [pending]
+      required: [id, status]
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        details:
+          type: object
+          additionalProperties: true
+      required: [code, message]
