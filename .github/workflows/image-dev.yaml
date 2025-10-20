@@ -1,14 +1,6 @@
 name: Image Dev
 
 on:
-  push:
-    branches:
-      - "main"
-    paths:
-      - ".github/workflows/image-dev.yaml"
-      - "infra/docker/dev.Dockerfile"
-      - "ops/apt/**"
-      - "package.json"
   workflow_dispatch:
 
 permissions:

@@ -1,0 +1,5 @@
+env          = "dev"
+zone_name    = "yifen9.li"
+service_name = "unitn-ap-api-dev"
+hostname     = "dev.api.ap.unitn.yifen9.li"
+d1_name      = "unitn-ap-api-dev"

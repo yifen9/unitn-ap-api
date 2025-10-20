@@ -1,20 +1,27 @@
 {
-  "name": "unitn-ap-api",
-  "private": true,
-  "version": "0.1.0",
-  "type": "module",
-  "scripts": {
-    "lint": "biome check .",
-    "format": "biome check --write ."
-  },
-  "dependencies": {
-    "@biomejs/biome": "^2.2.6",
-    "@cloudflare/workers-types": "^4.20251014.0",
-    "drizzle-kit": "^0.31.5",
-    "drizzle-orm": "^0.36.4",
-    "hono": "^4.10.1",
-    "typescript": "^5.9.3",
-    "vitest": "^3.2.4",
-    "wrangler": "^4.43.0"
-  }
+	"name": "unitn-ap-api",
+	"private": true,
+	"version": "0.1.0",
+	"type": "module",
+	"scripts": {
+		"lint": "biome check && terraform fmt -check -recursive",
+		"format": "biome check --write && terraform fmt -write=true -recursive",
+		"tf:init": "terraform -chdir=infra/terraform init",
+		"tf:plan:dev": "terraform -chdir=infra/terraform plan -var-file=envs/dev.tfvars",
+		"tf:apply:dev": "terraform -chdir=infra/terraform apply -var-file=envs/dev.tfvars -auto-approve",
+		"tf:destroy:dev": "terraform -chdir=infra/terraform destroy -var-file=envs/dev.tfvars -auto-approve",
+		"tf:output:dev": "terraform -chdir=infra/terraform output",
+		"tf:rebuild:dev": "pnpm tf:destroy:dev && pnpm tf:apply:dev"
+	},
+	"dependencies": {
+		"@biomejs/biome": "^2.2.6",
+		"@cloudflare/vitest-pool-workers": "^0.9.13",
+		"@cloudflare/workers-types": "^4.20251014.0",
+		"drizzle-kit": "^0.31.5",
+		"drizzle-orm": "^0.36.4",
+		"hono": "^4.10.1",
+		"typescript": "^5.9.3",
+		"vitest": "^3.2.4",
+		"wrangler": "^4.43.0"
+	}
 }

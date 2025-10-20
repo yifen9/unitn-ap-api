@@ -2,4 +2,3 @@ bash
 ca-certificates
 curl
 git
-libatomic1

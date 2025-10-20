@@ -1,21 +1,21 @@
 {
-  "dockerComposeFile": "compose.yaml",
-  "service": "unitn-ap-api-dev",
-  "workspaceFolder": "/workspace",
-  "shutdownAction": "stopCompose",
-  "customizations": {
-    "vscode": {
-      "extensions": [
-        "jeff-hykin.better-dockerfile-syntax",
-        "ms-vscode.vscode-typescript-next",
-        "jacano.vscode-pnpm",
-        "imgildev.vscode-drizzle-snippets",
-        "antfu.vite",
-        "vitest.explorer",
-        "biomejs.biome",
-        "hashicorp.terraform",
-        "hashicorp.hcl"
-      ]
-    }
-  }
+	"dockerComposeFile": "compose.yaml",
+	"service": "unitn-ap-api-dev",
+	"workspaceFolder": "/workspace",
+	"shutdownAction": "stopCompose",
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"jeff-hykin.better-dockerfile-syntax",
+				"ms-vscode.vscode-typescript-next",
+				"jacano.vscode-pnpm",
+				"imgildev.vscode-drizzle-snippets",
+				"antfu.vite",
+				"vitest.explorer",
+				"biomejs.biome",
+				"hashicorp.terraform",
+				"hashicorp.hcl"
+			]
+		}
+	}
 }

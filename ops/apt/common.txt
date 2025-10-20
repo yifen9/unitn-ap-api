@@ -1,0 +1,4 @@
+gpg
+libatomic1
+lsb-release
+wget
