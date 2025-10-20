@@ -1,0 +1,11 @@
+services:
+  unitn-ap-api-dev:
+    build:
+      context: ..
+      dockerfile: infra/docker/dev.Dockerfile
+    container_name: unitn-ap-api-dev
+    working_dir: /workspace
+    volumes:
+      - "..:/workspace"
+    command: >
+      bash -lc "exec sleep infinity"
