@@ -1,9 +1,9 @@
 import type { Context } from "hono";
 import { Hono } from "hono";
-import { validateInvitationCreate } from "../services/validation";
+import { validateAndDerive } from "../services/validation";
 import { badRequest } from "../utils/errors";
 
-function toId(): string {
+function newId(): string {
 	const n = crypto.getRandomValues(new Uint8Array(9));
 	const b = Array.from(n, (x) => x.toString(16).padStart(2, "0"))
 		.join("")
@@ -19,9 +19,17 @@ async function handler(c: Context) {
 		throw badRequest("body_parse_error");
 	}
 	try {
-		const _data = validateInvitationCreate(body);
-		const id = toId();
-		return c.json({ id, status: "pending" as const }, 202 as const);
+		const { payload: _payload, assignment } = validateAndDerive(body);
+		const id = newId();
+		return c.json(
+			{
+				id,
+				status: "pending" as const,
+				group: assignment.group,
+				role: assignment.role,
+			},
+			202 as const,
+		);
 	} catch (e) {
 		if (e instanceof Error && e.message.startsWith("bad_request:")) {
 			const code = e.message.split(":")[1] ?? "bad_request";

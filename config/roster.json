@@ -1,0 +1,25 @@
+{
+	"domain": "studenti.unitn.it",
+	"groups": [
+		{
+			"group": "cargonauts",
+			"leader": "martin.amamou@studenti.unitn.it",
+			"members": [
+				"martin.amamou@studenti.unitn.it",
+				"antonio.betalli@studenti.unitn.it",
+				"ivan.morabito@studenti.unitn.it",
+				"davide.germinario@studenti.unitn.it"
+			]
+		},
+		{
+			"group": "astro-parrots",
+			"leader": "thomas.dossi@studenti.unitn.it",
+			"members": [
+				"thomas.dossi@studenti.unitn.it",
+				"marco.malavolta@studenti.unitn.it",
+				"emanuele.stefani@studenti.unitn.it",
+				"alessandro.bridi-1@studenti.unitn.it"
+			]
+		}
+	]
+}

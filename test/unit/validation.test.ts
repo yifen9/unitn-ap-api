@@ -1,62 +1,27 @@
 import { describe, expect, it } from "vitest";
-import { validateInvitationCreate } from "../../src/services/validation";
+import { ROSTER } from "../../src/config/roster";
+import { validateAndDerive } from "../../src/services/validation";
 
-describe("validateInvitationCreate", () => {
-	it("accepts a valid payload", () => {
-		const v = validateInvitationCreate({
-			githubId: "octocat",
-			email: "alice.rossi@studenti.unitn.it",
-			team: "TEAM_A",
-			role: "captain",
-		});
-		expect(v).toEqual({
-			githubId: "octocat",
-			email: "alice.rossi@studenti.unitn.it",
-			team: "TEAM_A",
-			role: "captain",
-		});
+describe("validateAndDerive", () => {
+	it("accepts leader email and derives leader", () => {
+		const g = ROSTER.groups[0];
+		const r = validateAndDerive({ githubId: "octocat", email: g.leader });
+		expect(r.assignment.group).toBe(g.group);
+		expect(r.assignment.role).toBe("leader");
 	});
 
-	it("rejects invalid email domain", () => {
+	it("rejects wrong domain", () => {
 		expect(() =>
-			validateInvitationCreate({
+			validateAndDerive({ githubId: "octocat", email: "x@example.com" }),
+		).toThrowError(/bad_request:email_domain/);
+	});
+
+	it("rejects email not in roster", () => {
+		expect(() =>
+			validateAndDerive({
 				githubId: "octocat",
-				email: "alice@example.com",
-				team: "TEAM_A",
-				role: "member",
+				email: `nobody@${ROSTER.domain}`,
 			}),
-		).toThrowError(/bad_request:email/);
-	});
-
-	it("rejects missing githubId", () => {
-		expect(() =>
-			validateInvitationCreate({
-				email: "a@studenti.unitn.it",
-				team: "TEAM_A",
-				role: "member",
-			} as unknown),
-		).toThrowError(/bad_request:github_id/);
-	});
-
-	it("rejects invalid team", () => {
-		expect(() =>
-			validateInvitationCreate({
-				githubId: "octocat",
-				email: "a@studenti.unitn.it",
-				team: "TEAM_X",
-				role: "member",
-			} as unknown),
-		).toThrowError(/bad_request:team/);
-	});
-
-	it("rejects invalid role", () => {
-		expect(() =>
-			validateInvitationCreate({
-				githubId: "octocat",
-				email: "a@studenti.unitn.it",
-				team: "TEAM_A",
-				role: "owner",
-			} as unknown),
-		).toThrowError(/bad_request:role/);
+		).toThrowError(/bad_request:email_not_in_roster/);
 	});
 });
