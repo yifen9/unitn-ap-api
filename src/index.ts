@@ -3,7 +3,9 @@ import { health } from "./routes/health";
 import { invitationsCreate } from "./routes/invitations.create";
 import { HttpError } from "./utils/errors";
 
-type Env = Record<string, never>;
+export interface Env {
+	DB?: D1Database;
+}
 
 const app = new Hono<{ Bindings: Env }>().basePath("/v1");
 

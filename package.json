@@ -18,7 +18,9 @@
 		"oas:serve": "serve openapi -l 8080",
 		"oas:mock": "prism mock -p 4010 openapi/v1.yaml",
 		"dev": "wrangler dev --ip=0.0.0.0",
-		"test": "vitest run"
+		"test": "vitest run",
+		"db:gen": "drizzle-kit generate",
+		"db:migrate:dev": "wrangler d1 migrations apply DB --remote=false"
 	},
 	"dependencies": {
 		"@biomejs/biome": "^2.2.6",

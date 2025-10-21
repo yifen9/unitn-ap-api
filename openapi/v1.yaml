@@ -21,11 +21,8 @@ paths:
               schema:
                 type: object
                 properties:
-                  ok:
-                    type: boolean
-                  ts:
-                    type: integer
-                    format: int64
+                  ok: { type: boolean }
+                  ts: { type: integer, format: int64 }
                 required: [ok, ts]
               examples:
                 ok:
@@ -34,8 +31,8 @@ paths:
           description: bad request
           content:
             application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+              schema: { $ref: "#/components/schemas/Error" }
+
   /v1/invitations:
     post:
       summary: Create an invitation request
@@ -44,51 +41,46 @@ paths:
         required: true
         content:
           application/json:
-            schema:
-              $ref: "#/components/schemas/InvitationCreateRequest"
+            schema: { $ref: "#/components/schemas/InvitationCreateRequest" }
             examples:
               sample:
                 value:
                   githubId: octocat
                   email: alice.rossi@studenti.unitn.it
-                  team: TEAM_A
-                  role: captain
       responses:
         "202":
           description: accepted
           content:
             application/json:
-              schema:
-                $ref: "#/components/schemas/InvitationCreateResponse"
+              schema: { $ref: "#/components/schemas/InvitationCreateResponse" }
               examples:
                 accepted:
                   value:
                     id: inv_01JABCDE123456789
                     status: pending
+                    group: GROUP_ALPHA
+                    role: leader
         "400":
           description: bad request
           content:
             application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+              schema: { $ref: "#/components/schemas/Error" }
         "409":
           description: conflict
           content:
             application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+              schema: { $ref: "#/components/schemas/Error" }
         "429":
           description: too many requests
           content:
             application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+              schema: { $ref: "#/components/schemas/Error" }
         "500":
           description: server error
           content:
             application/json:
-              schema:
-                $ref: "#/components/schemas/Error"
+              schema: { $ref: "#/components/schemas/Error" }
+
 components:
   schemas:
     InvitationCreateRequest:
@@ -101,6 +93,7 @@ components:
           format: email
           pattern: "^[A-Za-z0-9._%+-]+@studenti\\.unitn\\.it$"
       required: [githubId, email]
+
     InvitationCreateResponse:
       type: object
       properties:
@@ -109,13 +102,12 @@ components:
         group: { type: string }
         role: { type: string, enum: [leader, member] }
       required: [id, status, group, role]
+
     Error:
       type: object
       properties:
-        code:
-          type: string
-        message:
-          type: string
+        code: { type: string }
+        message: { type: string }
         details:
           type: object
           additionalProperties: true
