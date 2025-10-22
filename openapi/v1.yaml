@@ -80,6 +80,100 @@ paths:
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Error" }
+  
+  /v1/invitations/{id}/resend:
+    post:
+      summary: Resend verification email
+      operationId: resendInvitationEmail
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "202":
+          description: accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties: { ok: { type: boolean } }
+                required: [ok]
+              examples: { accepted: { value: { ok: true } } }
+        "404":
+          description: not found
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+        "429":
+          description: too many requests
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /v1/invitations/verify:
+    get:
+      summary: Verify email token and enqueue invitation
+      operationId: verifyInvitation
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: queued
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                  id: { type: string }
+                  status: { type: string, enum: [queued] }
+                required: [ok, id, status]
+              examples:
+                queued:
+                  value: { ok: true, id: "inv_01JABCDE123456789", status: queued }
+        "400":
+          description: invalid or expired token
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /v1/webhooks/github:
+    post:
+      summary: GitHub organization webhook
+      operationId: githubWebhook
+      parameters:
+        - name: X-GitHub-Event
+          in: header
+          required: true
+          schema: { type: string }
+        - name: X-GitHub-Delivery
+          in: header
+          required: true
+          schema: { type: string }
+        - name: X-Hub-Signature-256
+          in: header
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, additionalProperties: true }
+      responses:
+        "200":
+          description: ok
+          content:
+            text/plain:
+              schema: { type: string }
+        "401":
+          description: signature mismatch
+          content:
+            text/plain:
+              schema: { type: string }
 
 components:
   schemas:
