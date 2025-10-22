@@ -1,11 +1,10 @@
 import { Hono } from "hono";
 import { health } from "./routes/health";
 import { invitationsCreate } from "./routes/invitations.create";
+import { invitationsResend } from "./routes/invitations.resend";
+import { invitationsVerify } from "./routes/invitations.verify";
+import type { Env } from "./types/env";
 import { HttpError } from "./utils/errors";
-
-export interface Env {
-	DB?: D1Database;
-}
 
 const app = new Hono<{ Bindings: Env }>().basePath("/v1");
 
@@ -24,5 +23,7 @@ app.onError((err, c) => {
 
 app.route("/", health);
 app.route("/", invitationsCreate);
+app.route("/", invitationsResend);
+app.route("/", invitationsVerify);
 
 export default app;
