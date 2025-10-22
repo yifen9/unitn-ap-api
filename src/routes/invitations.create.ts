@@ -1,3 +1,4 @@
+import { eq } from "drizzle-orm";
 import type { Context } from "hono";
 import { Hono } from "hono";
 import { getDB } from "../db/client";
@@ -68,23 +69,40 @@ async function handler(c: Context<{ Bindings: { DB?: D1Database } }>) {
 			createdAt: new Date(),
 		};
 
-		try {
-			const d1 = (c.env as { DB?: D1Database } | undefined)?.DB;
-			if (d1) {
-				const exists = await d1
-					.prepare(
-						`SELECT name FROM sqlite_master WHERE type='table' AND name=?`,
-					)
-					.bind("invitation_requests")
-					.first<{ name: string }>();
-				if (exists?.name === "invitation_requests") {
-					const db = getDB(c.env);
-					await db.insert(invitationRequests).values(row);
-				}
+		const d1 = (c.env as { DB?: D1Database } | undefined)?.DB;
+		if (d1) {
+			const db = getDB(c.env);
+
+			const pre = await db
+				.select()
+				.from(invitationRequests)
+				.where(eq(invitationRequests.email, row.email))
+				.limit(1);
+			if (pre.length > 0) {
+				const r0 = pre[0];
+				return c.json(
+					{ id: r0.id, status: r0.status, group: r0.group, role: r0.role },
+					202 as const,
+				);
 			}
-		} catch (e) {
-			const msg = e instanceof Error ? e.message : String(e);
-			if (msg !== "no_d1_binding" && !/no such table/i.test(msg)) throw e;
+
+			try {
+				await db
+					.insert(invitationRequests)
+					.values(row)
+					.onConflictDoNothing({ target: invitationRequests.email });
+			} catch {}
+
+			const post = await db
+				.select()
+				.from(invitationRequests)
+				.where(eq(invitationRequests.email, row.email))
+				.limit(1);
+			const r1 = post.length > 0 ? post[0] : row;
+			return c.json(
+				{ id: r1.id, status: r1.status, group: r1.group, role: r1.role },
+				202 as const,
+			);
 		}
 
 		return c.json(

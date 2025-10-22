@@ -1,7 +1,7 @@
 {
 	"name": "unitn-ap-api-dev",
 	"main": "src/index.ts",
-	"compatibility_date": "2025-10-20",
+	"compatibility_date": "2025-10-22",
 	"d1_databases": [
 		{
 			"binding": "DB",

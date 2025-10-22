@@ -1,11 +1,12 @@
 {
 	"name": "unitn-ap-api-test",
 	"main": "src/index.ts",
-	"compatibility_date": "2025-10-20",
+	"compatibility_date": "2025-10-22",
 	"d1_databases": [
 		{
 			"binding": "DB",
 			"database_name": "unitn-ap-api-test",
+			"database_id": "local",
 			"migrations_dir": "ops/drizzle"
 		}
 	]

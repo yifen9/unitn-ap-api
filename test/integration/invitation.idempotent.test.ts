@@ -24,20 +24,39 @@ function isAccepted(v: unknown): v is Accepted {
 	);
 }
 
-describe("POST /v1/invitations persists", () => {
-	it("writes one row", async () => {
+describe("POST /v1/invitations idempotency", () => {
+	it("returns same id for duplicate submissions", async () => {
 		const g = ROSTER.groups[0];
-		const res = await app.request(
+		const payload = { githubId: "octocat", email: g.leader };
+
+		const r1 = await app.request(
 			"/v1/invitations",
 			{
 				method: "POST",
 				headers: { "content-type": "application/json" },
-				body: JSON.stringify({ githubId: "octocat", email: g.leader }),
+				body: JSON.stringify(payload),
 			},
 			env,
 		);
-		expect(res.status).toBe(202);
-		const json: unknown = await res.json();
-		expect(isAccepted(json)).toBe(true);
+		expect(r1.status).toBe(202);
+		const j1: unknown = await r1.json();
+		expect(isAccepted(j1)).toBe(true);
+		const a1 = j1 as Accepted;
+
+		const r2 = await app.request(
+			"/v1/invitations",
+			{
+				method: "POST",
+				headers: { "content-type": "application/json" },
+				body: JSON.stringify(payload),
+			},
+			env,
+		);
+		expect(r2.status).toBe(202);
+		const j2: unknown = await r2.json();
+		expect(isAccepted(j2)).toBe(true);
+		const a2 = j2 as Accepted;
+
+		expect(a2.id).toBe(a1.id);
 	});
 });
