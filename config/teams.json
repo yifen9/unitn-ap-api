@@ -1,0 +1,6 @@
+{
+	"org": "unitn-ap-2025",
+	"groups": ["cargonauts", "astro-parrots"],
+	"roleTeams": { "leader": "leader", "member": "member" },
+	"groupPrefix": "wg-"
+}

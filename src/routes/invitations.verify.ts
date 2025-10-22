@@ -1,10 +1,25 @@
 import { eq } from "drizzle-orm";
 import type { Context } from "hono";
 import { Hono } from "hono";
+import teams from "../../config/teams.json";
+
 import { getDB } from "../db/client";
 import { invitationTokens } from "../db/schema";
+import { inviteWithTeams } from "../services/github";
 import { hashToken, verifyToken } from "../services/token";
 import type { Env } from "../types/env";
+
+function mapRole(role: "leader" | "member"): "admin" | "direct_member" {
+	return role === "leader" ? "direct_member" : "direct_member";
+}
+
+function teamSlugsFor(group: string, role: "leader" | "member"): string[] {
+	const a: string[] = [];
+	const tGroup = `${teams.groupPrefix}${group}`;
+	a.push(tGroup);
+	a.push(teams.roleTeams[role]);
+	return a;
+}
 
 export const invitationsVerify = new Hono<{ Bindings: Env }>().get(
 	"/invitations/verify",
@@ -13,13 +28,14 @@ export const invitationsVerify = new Hono<{ Bindings: Env }>().get(
 		if (!token)
 			return c.json(
 				{ code: "bad_request", message: "no token", details: {} },
-				400,
+				400 as const,
 			);
+
 		const parsed = await verifyToken(c.env.RESEND_API_KEY ?? "secret", token);
 		if (!parsed)
 			return c.json(
 				{ code: "invalid_token", message: "invalid", details: {} },
-				400,
+				400 as const,
 			);
 
 		const d1 = c.env.DB;
@@ -31,18 +47,23 @@ export const invitationsVerify = new Hono<{ Bindings: Env }>().get(
 			.from(invitationTokens)
 			.where(eq(invitationTokens.tokenHash, th))
 			.limit(1);
+
 		if (toks.length === 0)
 			return c.json(
 				{ code: "invalid_token", message: "not found", details: {} },
-				400,
+				400 as const,
 			);
+
 		const t = toks[0];
 		if (t.usedAt)
-			return c.json({ code: "used_token", message: "used", details: {} }, 400);
+			return c.json(
+				{ code: "used_token", message: "used", details: {} },
+				400 as const,
+			);
 		if (Date.now() > Number(t.expiresAt))
 			return c.json(
 				{ code: "expired_token", message: "expired", details: {} },
-				400,
+				400 as const,
 			);
 
 		await d1.batch([
@@ -54,6 +75,39 @@ export const invitationsVerify = new Hono<{ Bindings: Env }>().get(
 				.bind(Date.now(), t.id),
 		]);
 
-		return c.json({ ok: true, id: parsed.id, status: "email-verified" }, 200);
+		const rows = await d1
+			.prepare(
+				`SELECT email, group_name AS "group", role FROM invitation_requests WHERE id=?`,
+			)
+			.bind(parsed.id)
+			.all<{ email: string; group: string; role: "leader" | "member" }>();
+
+		if (!rows || rows.results?.length !== 1)
+			return c.json(
+				{ code: "not_found", message: "not found", details: {} },
+				404 as const,
+			);
+
+		const inv = rows.results[0];
+
+		const org = c.env.GITHUB_ORG ?? teams.org;
+		const role = mapRole(inv.role);
+		const ts = teamSlugsFor(inv.group, inv.role);
+		const created = await inviteWithTeams(c.env, org, {
+			email: inv.email,
+			role,
+			teamSlugs: ts,
+		});
+
+		return c.json(
+			{
+				ok: true,
+				id: parsed.id,
+				status: "invited",
+				invitationId: created.id,
+				teams: ts,
+			},
+			200 as const,
+		);
 	},
 );

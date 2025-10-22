@@ -3,4 +3,6 @@ export type Env = {
 	KV?: KVNamespace;
 	RESEND_API_KEY?: string;
 	BASE_URL?: string;
+	GITHUB_TOKEN?: string;
+	GITHUB_ORG?: string;
 };
