@@ -1,26 +1,9 @@
 import { describe, expect, it } from "vitest";
 import app from "../../src/index";
-
-function hmac(secret: string, body: string) {
-	const key = crypto.subtle.importKey(
-		"raw",
-		new TextEncoder().encode(secret),
-		{ name: "HMAC", hash: "SHA-256" },
-		false,
-		["sign"],
-	);
-	return key
-		.then((k) => crypto.subtle.sign("HMAC", k, new TextEncoder().encode(body)))
-		.then((buf) => {
-			const hex = Array.from(new Uint8Array(buf))
-				.map((b) => b.toString(16).padStart(2, "0"))
-				.join("");
-			return `sha256=${hex}`;
-		});
-}
+import { hmac256 } from "../helpers/hmac";
 
 describe("POST /v1/webhooks/github", () => {
-	it("401 on bad signature", async () => {
+	it("401 bad signature", async () => {
 		const body = JSON.stringify({
 			action: "member_added",
 			organization: { login: "x" },
@@ -36,13 +19,13 @@ describe("POST /v1/webhooks/github", () => {
 		expect(r.status).toBe(401);
 	});
 
-	it("200 on good signature", async () => {
+	it("200 good signature", async () => {
 		const secret = "testsecret";
 		const body = JSON.stringify({
 			action: "member_added",
 			organization: { login: "x" },
 		});
-		const sig = await hmac(secret, body);
+		const sig = await hmac256(secret, body);
 		const r = await app.request("/v1/webhooks/github", {
 			method: "POST",
 			headers: {

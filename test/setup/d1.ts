@@ -3,7 +3,6 @@ import { beforeAll } from "vitest";
 
 beforeAll(async () => {
 	const d1 = (env as unknown as { DB: D1Database }).DB;
-
 	await d1
 		.prepare(`
     CREATE TABLE IF NOT EXISTS invitation_requests (
@@ -17,7 +16,6 @@ beforeAll(async () => {
     )
   `)
 		.run();
-
 	await d1
 		.prepare(`
     CREATE TABLE IF NOT EXISTS invitation_tokens (
