@@ -4,33 +4,37 @@
 	"version": "0.1.0",
 	"type": "module",
 	"scripts": {
-		"lint": "biome check && terraform fmt -check -recursive",
-		"format": "biome check --write && terraform fmt -write=true -recursive",
+		"lint": "biome check && terraform -chdir=infra/terraform fmt -check -recursive",
+		"format": "biome check --write && terraform -chdir=infra/terraform fmt -write=true -recursive",
 		"test": "vitest run",
-		"tf:init": "terraform -chdir=infra/terraform init",
-		"tf:plan:dev": "terraform -chdir=infra/terraform plan -var-file=envs/dev.tfvars",
-		"tf:apply:dev": "terraform -chdir=infra/terraform apply -var-file=envs/dev.tfvars -auto-approve",
+
+		"build:bundle": "wrangler deploy --dry-run --outdir infra/terraform/build",
+		"tf:init": "terraform -chdir=infra/terraform init -upgrade",
+		"tf:plan:dev": "pnpm build:bundle && terraform -chdir=infra/terraform plan -var-file=envs/dev.tfvars",
+		"tf:apply:dev": "pnpm build:bundle && terraform -chdir=infra/terraform apply -var-file=envs/dev.tfvars -auto-approve",
 		"tf:destroy:dev": "terraform -chdir=infra/terraform destroy -var-file=envs/dev.tfvars -auto-approve",
 		"tf:output:dev": "terraform -chdir=infra/terraform output",
 		"tf:rebuild:dev": "pnpm tf:destroy:dev && pnpm tf:apply:dev",
+
+		"wrangler:sync": "node ops/wrangler/sync.mjs",
+		"db:gen": "drizzle-kit generate",
+		"db:migrate:dev:remote": "pnpm wrangler:sync && wrangler --config wrangler.generated.json d1 migrations apply DB --remote",
+
 		"oas:lint": "openapi lint openapi/v1.yaml",
 		"oas:bundle": "openapi bundle openapi/v1.yaml -o openapi/bundle.yaml",
 		"oas:docs": "openapi build-docs openapi/v1.yaml -o openapi/docs.html",
 		"oas:serve": "serve openapi -l 8080",
 		"oas:mock": "prism mock -p 4010 openapi/v1.yaml",
+
 		"dev:local": "BASE_URL=http://localhost:8787 wrangler dev --ip=0.0.0.0",
 		"dev:remote": "wrangler dev --remote --persist-to=.wrangler/state",
-		"tail:dev": "wrangler tail --format=pretty",
-		"db:gen": "drizzle-kit generate",
-		"db:migrate:dev:local": "wrangler d1 migrations apply DB --remote=false",
-		"db:migrate:dev:remote": "wrangler d1 migrations apply DB --remote",
-		"ship:dev": "pnpm tf:apply:dev && pnpm db:gen && pnpm db:migrate:dev:remote && pnpm tail:dev"
+		"tail:dev": "wrangler tail --format=pretty"
 	},
 	"dependencies": {
 		"@biomejs/biome": "^2.2.7",
 		"@cloudflare/vitest-pool-workers": "^0.9.14",
 		"@cloudflare/workers-types": "^4.20251014.0",
-		"@redocly/cli": "^2.8.0",
+		"@redocly/cli": "^2.7.0",
 		"@stoplight/prism-cli": "^5.14.2",
 		"drizzle-kit": "^0.31.5",
 		"drizzle-orm": "^0.36.4",

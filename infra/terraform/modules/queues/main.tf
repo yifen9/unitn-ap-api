@@ -8,3 +8,4 @@ resource "cloudflare_queue" "q" {
 }
 
 output "queue_name" { value = cloudflare_queue.q.queue_name }
+output "queue_id" { value = cloudflare_queue.q.id }

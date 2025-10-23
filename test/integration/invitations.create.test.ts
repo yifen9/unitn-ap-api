@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { ROSTER } from "../../src/config/roster";
-import app from "../../src/index";
+import { app } from "../../src/index";
 import { isAccepted, isErr } from "../helpers/guard";
 
 describe("POST /v1/invitations", () => {

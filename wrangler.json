@@ -1,14 +1,6 @@
 {
 	"name": "unitn-ap-api-dev",
-	"main": "src/index.ts",
+	"main": "src/_worker.ts",
 	"compatibility_date": "2025-10-22",
-	"d1_databases": [
-		{
-			"binding": "DB",
-			"database_name": "unitn-ap-api-dev",
-			"database_id": "1dfd3519-e3f1-47a3-a99b-f6e1335f2185",
-			"migrations_dir": "ops/drizzle"
-		}
-	],
 	"dev": { "ip": "0.0.0.0" }
 }

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { ROSTER } from "../../src/config/roster";
-import app from "../../src/index";
+import { app } from "../../src/index";
 
 describe("POST /v1/invitations/:id/resend", () => {
 	it("202 for existing", async () => {

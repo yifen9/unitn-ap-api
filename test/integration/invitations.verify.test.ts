@@ -2,7 +2,7 @@ import { env } from "cloudflare:test";
 import type { Mock } from "vitest";
 import { describe, expect, it } from "vitest";
 import { ROSTER } from "../../src/config/roster";
-import app from "../../src/index";
+import { app } from "../../src/index";
 import { isQueued } from "../helpers/guard";
 
 describe("GET /v1/invitations/verify", () => {

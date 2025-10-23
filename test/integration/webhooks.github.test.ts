@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import app from "../../src/index";
+import { app } from "../../src/index";
 import { hmac256 } from "../helpers/hmac";
 
 describe("POST /v1/webhooks/github", () => {
