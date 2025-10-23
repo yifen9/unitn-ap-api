@@ -17,7 +17,7 @@ export const githubWebhook = new Hono<{ Bindings: Env }>().post(
 		const sig = c.req.header("x-hub-signature-256") ?? "";
 		const evt = c.req.header("x-github-event") ?? "";
 		const body = await c.req.arrayBuffer();
-		const secret = c.env?.GITHUB_WEBHOOK_SECRET ?? "testsecret";
+		const secret = c.env.GITHUB_WEBHOOK_SECRET ?? "testsecret";
 		const ok = await verifyGitHubSignature(secret, body, sig);
 		if (!ok) return c.text("sig", 401);
 		let json: OrgEvent;

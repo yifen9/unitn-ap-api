@@ -6,7 +6,7 @@
 		{
 			"binding": "DB",
 			"database_name": "unitn-ap-api-dev",
-			"database_id": "95961d57-76b9-42da-ad56-29bc10354ec2",
+			"database_id": "4ffca3cc-b128-4c7e-88d6-c2cd84598059",
 			"migrations_dir": "ops/drizzle"
 		}
 	],

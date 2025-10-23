@@ -6,5 +6,6 @@ export type Env = {
 	GITHUB_TOKEN?: string;
 	GITHUB_ORG?: string;
 	GITHUB_WEBHOOK_SECRET?: string;
+	EMAIL_TOKEN_SECRET?: string;
 	INVITE_JOBS: Queue;
 };

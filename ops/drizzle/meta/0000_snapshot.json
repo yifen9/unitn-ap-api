@@ -1,7 +1,7 @@
 {
 	"version": "6",
 	"dialect": "sqlite",
-	"id": "5945dbb3-ce3c-4fe6-8f44-d54346f6cdab",
+	"id": "693273e3-7855-433d-800b-61f741b1c261",
 	"prevId": "00000000-0000-0000-0000-000000000000",
 	"tables": {
 		"invitation_requests": {
@@ -28,8 +28,8 @@
 					"notNull": true,
 					"autoincrement": false
 				},
-				"group": {
-					"name": "group",
+				"group_name": {
+					"name": "group_name",
 					"type": "text",
 					"primaryKey": false,
 					"notNull": true,
@@ -57,7 +57,78 @@
 					"autoincrement": false
 				}
 			},
-			"indexes": {},
+			"indexes": {
+				"idx_invitation_requests_email": {
+					"name": "idx_invitation_requests_email",
+					"columns": ["email"],
+					"isUnique": true
+				}
+			},
+			"foreignKeys": {},
+			"compositePrimaryKeys": {},
+			"uniqueConstraints": {},
+			"checkConstraints": {}
+		},
+		"invitation_tokens": {
+			"name": "invitation_tokens",
+			"columns": {
+				"id": {
+					"name": "id",
+					"type": "text",
+					"primaryKey": true,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"invitation_id": {
+					"name": "invitation_id",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"purpose": {
+					"name": "purpose",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"token_hash": {
+					"name": "token_hash",
+					"type": "text",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"expires_at": {
+					"name": "expires_at",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				},
+				"used_at": {
+					"name": "used_at",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"created_at": {
+					"name": "created_at",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": true,
+					"autoincrement": false
+				}
+			},
+			"indexes": {
+				"idx_invitation_tokens_hash": {
+					"name": "idx_invitation_tokens_hash",
+					"columns": ["token_hash"],
+					"isUnique": true
+				}
+			},
 			"foreignKeys": {},
 			"compositePrimaryKeys": {},
 			"uniqueConstraints": {},

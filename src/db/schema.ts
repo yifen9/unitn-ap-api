@@ -11,13 +11,13 @@ export const invitationRequests = sqliteTable(
 		id: text("id").primaryKey(),
 		githubId: text("github_id").notNull(),
 		email: text("email").notNull(),
-		group: text("group_name").notNull(),
+		groupName: text("group_name").notNull(),
 		role: text("role").notNull(),
 		status: text("status").notNull(),
 		createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
 	},
 	(t) => ({
-		uqEmail: uniqueIndex("idx_invitation_requests_email").on(t.email),
+		emailIdx: uniqueIndex("idx_invitation_requests_email").on(t.email),
 	}),
 );
 
@@ -33,6 +33,6 @@ export const invitationTokens = sqliteTable(
 		createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
 	},
 	(t) => ({
-		uqToken: uniqueIndex("idx_invitation_tokens_hash").on(t.tokenHash),
+		tokenIdx: uniqueIndex("idx_invitation_tokens_hash").on(t.tokenHash),
 	}),
 );

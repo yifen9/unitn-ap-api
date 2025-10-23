@@ -1,1 +1,0 @@
-CREATE UNIQUE INDEX `idx_invitation_requests_email` ON `invitation_requests` (`email`);
