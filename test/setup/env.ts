@@ -1,5 +1,5 @@
 import { env } from "cloudflare:test";
-import { beforeEach } from "vitest";
+import { beforeEach, vi } from "vitest";
 
 type Q = {
 	send: (v: unknown) => Promise<void>;
@@ -20,7 +20,8 @@ declare module "cloudflare:test" {
 }
 
 beforeEach(async () => {
-	const q: Q = { send: async () => {}, sendBatch: async () => {} };
+	const send = vi.fn(async () => {});
+	const q: Q = { send, sendBatch: async () => {} };
 	(env as unknown as { INVITE_JOBS: Q }).INVITE_JOBS = q;
 	(env as unknown as { BASE_URL: string }).BASE_URL = "http://example.com";
 	(env as unknown as { EMAIL_TOKEN_SECRET: string }).EMAIL_TOKEN_SECRET =

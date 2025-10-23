@@ -23,10 +23,8 @@ export const invitationsResend = new Hono<{ Bindings: Env }>().post(
 		});
 		const h = await hashToken(token);
 		setTokenHash(id, h);
-		const verificationUrl = `${base}/v1/invitations/verify?token=${encodeURIComponent(
-			token,
-		)}`;
+		const verificationUrl = `${base}/v1/invitations/verify?token=${encodeURIComponent(token)}`;
 
-		return c.json({ verificationUrl }, 202);
+		return c.json({ ok: true, verificationUrl }, 202);
 	},
 );

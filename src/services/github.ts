@@ -38,10 +38,19 @@ export type InviteSpec = {
 	teamSlugs: string[];
 };
 
+export function* expBackoffSeconds(baseSeconds = 60, factor = 2) {
+	let n = baseSeconds;
+	while (true) {
+		yield n;
+		n *= factor;
+	}
+}
+
 export async function inviteWithTeams(
 	env: Env,
 	org: string,
 	spec: InviteSpec,
+	opts?: { maxAttempts?: number },
 ): Promise<{ id: number }> {
 	const ids: number[] = [];
 	for (const s of spec.teamSlugs) ids.push(await getTeamIdBySlug(env, org, s));
@@ -50,19 +59,48 @@ export async function inviteWithTeams(
 		role: spec.role,
 		team_ids: ids,
 	});
-	let delay = 500;
-	for (let i = 0; i < 4; i++) {
+
+	const maxAttempts = opts?.maxAttempts ?? 6;
+	const backoff = expBackoffSeconds(60, 2); // 1,2,4,8,16,32... minutes in seconds
+
+	for (let attempt = 0; attempt < maxAttempts; attempt++) {
 		const r = await gh(env, `/orgs/${org}/invitations`, {
 			method: "POST",
 			body,
 			headers: { "content-type": "application/json" },
 		});
+
 		if (r.status === 201) return (await r.json()) as { id: number };
-		if (r.status === 422 || r.status === 429) {
-			await new Promise((res) => setTimeout(res, delay));
-			delay *= 2;
+
+		if (r.status === 429 || r.status === 403) {
+			const ra = r.headers.get("retry-after");
+			if (ra) {
+				const secs = Math.max(0, Number(ra));
+				await new Promise((res) => setTimeout(res, secs * 1000));
+				continue;
+			}
+			const remaining = Number(r.headers.get("x-ratelimit-remaining") ?? "");
+			const reset = Number(r.headers.get("x-ratelimit-reset") ?? "");
+			if (
+				Number.isFinite(remaining) &&
+				remaining === 0 &&
+				Number.isFinite(reset)
+			) {
+				const waitMs = Math.max(0, reset * 1000 - Date.now());
+				await new Promise((res) => setTimeout(res, waitMs));
+				continue;
+			}
+			const wait = backoff.next().value as number;
+			await new Promise((res) => setTimeout(res, wait * 1000));
 			continue;
 		}
+
+		if (r.status === 422) {
+			const wait = backoff.next().value as number;
+			await new Promise((res) => setTimeout(res, wait * 1000));
+			continue;
+		}
+
 		throw new Error(`gh_invite:${r.status}`);
 	}
 	throw new Error("gh_invite_retry_exhausted");

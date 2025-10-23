@@ -4,15 +4,11 @@ import { inviteWithTeams } from "../../src/services/github";
 type Env = { GITHUB_TOKEN?: string; KV?: KVNamespace };
 
 describe("github rate limit handling", () => {
-	it("retries on 429 with Retry-After or backoff", async () => {
+	it("retries on 429 then succeeds", async () => {
 		const env: Env = { GITHUB_TOKEN: "t" };
-		const fetchMock = vi
-			.fn()
+		vi.spyOn(globalThis, "fetch")
 			.mockResolvedValueOnce(
-				new Response(JSON.stringify({}), {
-					status: 429,
-					headers: { "retry-after": "0" },
-				}),
+				new Response("{}", { status: 429, headers: { "retry-after": "0" } }),
 			)
 			.mockResolvedValueOnce(
 				new Response(JSON.stringify({ id: 1 }), {
@@ -20,14 +16,14 @@ describe("github rate limit handling", () => {
 					headers: { "content-type": "application/json" },
 				}),
 			);
-		(globalThis as unknown as { fetch: typeof fetch }).fetch = fetchMock;
 
-		const r = await inviteWithTeams(env as never, "o", {
-			email: "a@b.com",
-			role: "direct_member",
-			teamSlugs: [],
-		});
+		const r = await inviteWithTeams(
+			env as never,
+			"o",
+			{ email: "a@b.com", role: "direct_member", teamSlugs: [] },
+			{ maxAttempts: 3 },
+		);
 		expect(r.id).toBe(1);
-		expect(fetchMock).toHaveBeenCalledTimes(2);
+		expect(globalThis.fetch).toHaveBeenCalledTimes(2);
 	});
 });

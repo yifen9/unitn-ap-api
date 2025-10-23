@@ -21,6 +21,13 @@ export const invitationsVerify = new Hono<{ Bindings: Env }>().get(
 		if (!rec.tokenHash || rec.tokenHash !== h)
 			return c.text("bad_request", 400);
 
-		return c.json({ status: "queued" }, 200);
+		await c.env.INVITE_JOBS.send({
+			id: rec.id,
+			email: rec.email,
+			group: rec.group,
+			role: rec.role,
+		});
+
+		return c.json({ ok: true, id: rec.id, status: "queued" as const }, 200);
 	},
 );
