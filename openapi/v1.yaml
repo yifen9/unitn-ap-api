@@ -6,7 +6,7 @@ info:
     name: MIT
     identifier: MIT
 servers:
-  - url: https://dev.api.ap.unitn.yifen9.li
+  - url: https://api.ap.unitn.yifen9.li
 security: []
 paths:
   /v1/healthz:
@@ -24,14 +24,6 @@ paths:
                   ok: { type: boolean }
                   ts: { type: integer, format: int64 }
                 required: [ok, ts]
-              examples:
-                ok:
-                  value: { ok: true, ts: 1739999999999 }
-        "400":
-          description: bad request
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/Error" }
 
   /v1/invitations:
     post:
@@ -45,8 +37,8 @@ paths:
             examples:
               sample:
                 value:
-                  githubId: octocat
-                  email: alice.rossi@studenti.unitn.it
+                  githubId: yifen9
+                  email: yifeng.li@studenti.unitn.it
       responses:
         "202":
           description: accepted
@@ -58,29 +50,14 @@ paths:
                   value:
                     id: inv_01JABCDE123456789
                     status: pending
-                    group: GROUP_ALPHA
+                    group: astro-parrots
                     role: leader
         "400":
           description: bad request
           content:
             application/json:
               schema: { $ref: "#/components/schemas/Error" }
-        "409":
-          description: conflict
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/Error" }
-        "429":
-          description: too many requests
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/Error" }
-        "500":
-          description: server error
-          content:
-            application/json:
-              schema: { $ref: "#/components/schemas/Error" }
-  
+
   /v1/invitations/{id}/resend:
     post:
       summary: Resend verification email
@@ -97,19 +74,23 @@ paths:
             application/json:
               schema:
                 type: object
-                properties: { ok: { type: boolean } }
-                required: [ok]
-              examples: { accepted: { value: { ok: true } } }
+                properties:
+                  verificationUrl: { type: string, format: uri }
+                required: [verificationUrl]
+              examples:
+                accepted:
+                  value:
+                    verificationUrl: "https://api.ap.unitn.yifen9.li/v1/invitations/verify?token=..."
         "404":
           description: not found
           content:
-            application/json:
-              schema: { $ref: "#/components/schemas/Error" }
+            text/plain:
+              schema: { type: string, example: not_found }
         "429":
           description: too many requests
           content:
-            application/json:
-              schema: { $ref: "#/components/schemas/Error" }
+            text/plain:
+              schema: { type: string, example: rate_limited }
 
   /v1/invitations/verify:
     get:
@@ -128,18 +109,16 @@ paths:
               schema:
                 type: object
                 properties:
-                  ok: { type: boolean }
-                  id: { type: string }
                   status: { type: string, enum: [queued] }
-                required: [ok, id, status]
+                required: [status]
               examples:
                 queued:
-                  value: { ok: true, id: "inv_01JABCDE123456789", status: queued }
+                  value: { status: queued }
         "400":
           description: invalid or expired token
           content:
-            application/json:
-              schema: { $ref: "#/components/schemas/Error" }
+            text/plain:
+              schema: { type: string, example: bad_request }
 
   /v1/webhooks/github:
     post:
@@ -168,12 +147,17 @@ paths:
           description: ok
           content:
             text/plain:
-              schema: { type: string }
+              schema: { type: string, example: ok }
         "401":
           description: signature mismatch
           content:
             text/plain:
-              schema: { type: string }
+              schema: { type: string, example: sig }
+        "400":
+          description: bad body
+          content:
+            text/plain:
+              schema: { type: string, example: bad_body }
 
 components:
   schemas:
