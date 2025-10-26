@@ -30,7 +30,6 @@ module "worker" {
 
   d1_database_id  = module.db.database_id
   kv_namespace_id = module.kv.namespace_id
-  queue_id        = module.queue.queue_id
   queue_name      = module.queue.queue_name
 
   base_url   = var.base_url
@@ -40,6 +39,7 @@ module "worker" {
   email_token_secret    = var.email_token_secret
   github_token          = var.github_token
   github_webhook_secret = var.github_webhook_secret
+  resend_from           = var.resend_from
 }
 
 output "dev_hostname" { value = module.worker.hostname }

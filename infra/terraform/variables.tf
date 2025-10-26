@@ -11,5 +11,6 @@ variable "base_url" { type = string }
 
 variable "resend_api_key" { type = string }
 variable "email_token_secret" { type = string }
+variable "resend_from" { type = string }
 variable "github_token" { type = string }
 variable "github_webhook_secret" { type = string }

@@ -7,6 +7,7 @@ info:
     identifier: MIT
 servers:
   - url: https://api.ap.unitn.yifen9.li
+  - url: https://dev.api.ap.unitn.yifen9.li
 security: []
 paths:
   /v1/healthz:
@@ -75,11 +76,13 @@ paths:
               schema:
                 type: object
                 properties:
+                  ok: { type: boolean }
                   verificationUrl: { type: string, format: uri }
-                required: [verificationUrl]
+                required: [ok, verificationUrl]
               examples:
                 accepted:
                   value:
+                    ok: true
                     verificationUrl: "https://api.ap.unitn.yifen9.li/v1/invitations/verify?token=..."
         "404":
           description: not found

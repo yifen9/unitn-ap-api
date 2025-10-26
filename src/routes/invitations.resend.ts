@@ -1,5 +1,6 @@
 import type { Context } from "hono";
 import { Hono } from "hono";
+import { sendVerificationEmail } from "../services/email";
 import { hashToken, newRnd, signToken } from "../services/token";
 import { getInvitation, incResend, setTokenHash } from "../state/invitations";
 import type { Env } from "../types/env";
@@ -23,7 +24,13 @@ export const invitationsResend = new Hono<{ Bindings: Env }>().post(
 		});
 		const h = await hashToken(token);
 		setTokenHash(id, h);
-		const verificationUrl = `${base}/v1/invitations/verify?token=${encodeURIComponent(token)}`;
+		const verificationUrl = `${base}/v1/invitations/verify?token=${encodeURIComponent(
+			token,
+		)}`;
+
+		try {
+			await sendVerificationEmail(c.env, found.email, verificationUrl);
+		} catch {}
 
 		return c.json({ ok: true, verificationUrl }, 202);
 	},

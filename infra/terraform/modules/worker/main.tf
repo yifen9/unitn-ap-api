@@ -52,6 +52,11 @@ resource "cloudflare_workers_script" "svc" {
       text = var.email_token_secret
     },
     {
+      name = "RESEND_FROM"
+      type = "plain_text"
+      text = var.resend_from
+    },
+    {
       name = "GITHUB_TOKEN"
       type = "secret_text"
       text = var.github_token
@@ -62,13 +67,6 @@ resource "cloudflare_workers_script" "svc" {
       text = var.github_webhook_secret
     }
   ]
-}
-
-resource "cloudflare_queue_consumer" "invite" {
-  account_id  = var.account_id
-  queue_id    = var.queue_id
-  script_name = cloudflare_workers_script.svc.script_name
-  type        = "worker"
 }
 
 resource "cloudflare_workers_custom_domain" "domain" {

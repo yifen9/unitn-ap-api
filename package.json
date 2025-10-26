@@ -8,6 +8,9 @@
 		"format": "biome check --write && terraform -chdir=infra/terraform fmt -write=true -recursive",
 		"test": "vitest run",
 
+		"e2e:dev": "BASE=https://dev.api.ap.unitn.yifen9.li bash ops/scripts/e2e.sh",
+		"e2e:prod": "BASE=https://api.ap.unitn.yifen9.li bash ops/scripts/e2e.sh",
+
 		"build:bundle": "wrangler deploy --dry-run --outdir infra/terraform/build",
 		"tf:init": "terraform -chdir=infra/terraform init -upgrade",
 		"tf:plan:dev": "pnpm build:bundle && terraform -chdir=infra/terraform plan -var-file=envs/dev.tfvars",
