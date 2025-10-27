@@ -13,15 +13,26 @@
 
 		"build:bundle": "wrangler deploy --dry-run --outdir infra/terraform/build",
 		"tf:init": "terraform -chdir=infra/terraform init -upgrade",
+
 		"tf:plan:dev": "pnpm build:bundle && terraform -chdir=infra/terraform plan -var-file=envs/dev.tfvars",
 		"tf:apply:dev": "pnpm build:bundle && terraform -chdir=infra/terraform apply -var-file=envs/dev.tfvars -auto-approve",
 		"tf:destroy:dev": "terraform -chdir=infra/terraform destroy -var-file=envs/dev.tfvars -auto-approve",
-		"tf:output:dev": "terraform -chdir=infra/terraform output",
+
+		"tf:output": "terraform -chdir=infra/terraform output",
+
 		"tf:rebuild:dev": "pnpm tf:destroy:dev && pnpm tf:apply:dev",
+
+		"tf:plan:prod": "pnpm build:bundle && terraform -chdir=infra/terraform plan -var-file=envs/prod.tfvars",
+		"tf:apply:prod": "pnpm build:bundle && terraform -chdir=infra/terraform apply -var-file=envs/prod.tfvars -auto-approve",
+		"tf:destroy:prod": "terraform -chdir=infra/terraform destroy -var-file=envs/prod.tfvars -auto-approve",
 
 		"wrangler:sync": "node ops/wrangler/sync.mjs",
 		"db:gen": "drizzle-kit generate",
 		"db:migrate:dev:remote": "pnpm wrangler:sync && wrangler --config wrangler.generated.json d1 migrations apply DB --remote",
+		"db:migrate:prod:remote": "pnpm wrangler:sync && wrangler --config wrangler.generated.json d1 migrations apply DB --remote",
+
+		"queues:bind:dev": "bash ops/scripts/queues-consumer.sh unitn-ap-api-invite-dev unitn-ap-api-dev",
+		"queues:bind:prod": "bash ops/scripts/queues-consumer.sh unitn-ap-api-invite unitn-ap-api",
 
 		"oas:lint": "openapi lint openapi/v1.yaml",
 		"oas:bundle": "openapi bundle openapi/v1.yaml -o openapi/bundle.yaml",

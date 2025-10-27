@@ -8,7 +8,7 @@ CREATE TABLE `invitation_requests` (
 	`created_at` integer NOT NULL
 );
 --> statement-breakpoint
-CREATE UNIQUE INDEX `idx_invitation_requests_email` ON `invitation_requests` (`email`);--> statement-breakpoint
+CREATE UNIQUE INDEX `uniq_invitation_requests_github_email` ON `invitation_requests` (`github_id`,`email`);--> statement-breakpoint
 CREATE TABLE `invitation_tokens` (
 	`id` text PRIMARY KEY NOT NULL,
 	`invitation_id` text NOT NULL,

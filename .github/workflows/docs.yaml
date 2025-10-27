@@ -40,11 +40,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: pnpm
+          cache: 'pnpm'
 
       - run: corepack enable
 
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --no-frozen-lockfile
 
       - run: pnpm oas:lint
 
@@ -56,6 +56,8 @@ jobs:
           mkdir -p openapi/site
           cp openapi/docs.html openapi/site/index.html
           cp openapi/bundle.yaml openapi/site/openapi.yaml
+
+      - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3
         with:

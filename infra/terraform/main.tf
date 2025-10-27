@@ -42,6 +42,13 @@ module "worker" {
   resend_from           = var.resend_from
 }
 
+//module "queue_consumer" {
+//  source      = "./modules/queue_consumer"
+//  account_id  = var.account_id
+//  queue_id    = module.queue.queue_id
+//  script_name = module.worker.service_name
+//}
+
 output "dev_hostname" { value = module.worker.hostname }
 output "service_name" { value = module.worker.service_name }
 output "d1_database_id" { value = module.db.database_id }

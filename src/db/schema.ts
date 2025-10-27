@@ -15,9 +15,14 @@ export const invitationRequests = sqliteTable(
 		role: text("role").notNull(),
 		status: text("status").notNull(),
 		createdAt: integer("created_at", { mode: "timestamp_ms" }).notNull(),
+		verifiedAt: integer("verified_at", { mode: "timestamp_ms" }),
+		invitedAt: integer("invited_at", { mode: "timestamp_ms" }),
 	},
 	(t) => ({
-		emailIdx: uniqueIndex("idx_invitation_requests_email").on(t.email),
+		uniqGithubEmail: uniqueIndex("uniq_invitation_requests_github_email").on(
+			t.githubId,
+			t.email,
+		),
 	}),
 );
 

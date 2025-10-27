@@ -1,8 +1,8 @@
 {
 	"version": "6",
 	"dialect": "sqlite",
-	"id": "832bb8c3-7888-4b46-b507-eafc60fd6a7c",
-	"prevId": "00000000-0000-0000-0000-000000000000",
+	"id": "bbaa0a6c-c898-454f-b875-a6de8c0681ed",
+	"prevId": "832bb8c3-7888-4b46-b507-eafc60fd6a7c",
 	"tables": {
 		"invitation_requests": {
 			"name": "invitation_requests",
@@ -54,6 +54,20 @@
 					"type": "integer",
 					"primaryKey": false,
 					"notNull": true,
+					"autoincrement": false
+				},
+				"verified_at": {
+					"name": "verified_at",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false,
+					"autoincrement": false
+				},
+				"invited_at": {
+					"name": "invited_at",
+					"type": "integer",
+					"primaryKey": false,
+					"notNull": false,
 					"autoincrement": false
 				}
 			},

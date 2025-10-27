@@ -2,11 +2,6 @@
 	"domain": "studenti.unitn.it",
 	"groups": [
 		{
-			"group": "test",
-			"leader": "yifeng.li@studenti.unitn.it",
-			"members": ["yifeng.li@studenti.unitn.it"]
-		},
-		{
 			"group": "cargonauts",
 			"leader": "martin.amamou@studenti.unitn.it",
 			"members": [

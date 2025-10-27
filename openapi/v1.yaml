@@ -95,33 +95,47 @@ paths:
             text/plain:
               schema: { type: string, example: rate_limited }
 
-  /v1/invitations/verify:
-    get:
-      summary: Verify email token and enqueue invitation
-      operationId: verifyInvitation
-      parameters:
-        - name: token
-          in: query
-          required: true
-          schema: { type: string }
-      responses:
-        "200":
-          description: queued
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  status: { type: string, enum: [queued] }
-                required: [status]
-              examples:
-                queued:
-                  value: { status: queued }
-        "400":
-          description: invalid or expired token
-          content:
-            text/plain:
-              schema: { type: string, example: bad_request }
+    /v1/invitations/verify:
+      get:
+        summary: Verify email token and enqueue invitation
+        operationId: verifyInvitation
+        parameters:
+          - name: token
+            in: query
+            required: true
+            schema: { type: string }
+        responses:
+          "200":
+            description: queued
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    ok: { type: boolean }
+                    id: { type: string }
+                    status: { type: string, enum: [queued] }
+                    verification:
+                      type: object
+                      properties:
+                        verifiedAt: { type: integer, format: int64 }
+                        tokenUsedAt: { type: integer, format: int64 }
+                      required: [verifiedAt, tokenUsedAt]
+                  required: [ok, id, status, verification]
+                examples:
+                  queued:
+                    value:
+                      ok: true
+                      id: inv_01JABCDE123456789
+                      status: queued
+                      verification:
+                        verifiedAt: 1730000000000
+                        tokenUsedAt: 1730000000000
+          "400":
+            description: invalid or expired token
+            content:
+              text/plain:
+                schema: { type: string, example: bad_request }
 
   /v1/webhooks/github:
     post:

@@ -11,10 +11,40 @@ async function gh(env: Env, path: string, init?: RequestInit) {
 		headers: {
 			...H,
 			Authorization: `Bearer ${env.GITHUB_TOKEN ?? ""}`,
+			"User-Agent": "unitn-ap-inviter",
 			...(init?.headers ?? {}),
 		},
 	});
 	return r;
+}
+
+async function respText(r: Response): Promise<string> {
+	try {
+		const t = await r.text();
+		return t.length > 800 ? `${t.slice(0, 800)}…` : t;
+	} catch {
+		return "";
+	}
+}
+
+async function getSelfLogin(env: Env): Promise<string | null> {
+	const k = "gh:self:login";
+	const cached = await env.KV?.get(k);
+	if (cached) return cached;
+	const r = await gh(env, "/user", { method: "GET" });
+	if (!r.ok) return null;
+	const j = (await r.json()) as { login?: string | null };
+	const login = j.login ?? null;
+	if (login) await env.KV?.put(k, login, { expirationTtl: 3600 });
+	return login;
+}
+
+async function leaveSelfFromTeam(env: Env, org: string, slug: string) {
+	const me = await getSelfLogin(env);
+	if (!me) return;
+	await gh(env, `/orgs/${org}/teams/${slug}/memberships/${me}`, {
+		method: "DELETE",
+	});
 }
 
 async function createTeam(
@@ -22,10 +52,7 @@ async function createTeam(
 	org: string,
 	slug: string,
 ): Promise<number> {
-	const body = JSON.stringify({
-		name: slug,
-		privacy: "closed",
-	});
+	const body = JSON.stringify({ name: slug, privacy: "closed" });
 	let delay = 500;
 	for (let i = 0; i < 5; i++) {
 		const r = await gh(env, `/orgs/${org}/teams`, {
@@ -38,23 +65,43 @@ async function createTeam(
 			await env.KV?.put(`team:id:${org}:${j.slug}`, String(j.id), {
 				expirationTtl: 86400,
 			});
+			try {
+				await leaveSelfFromTeam(env, org, j.slug);
+			} catch {}
 			return j.id;
 		}
 		if (r.status === 422) {
 			const g = await gh(env, `/orgs/${org}/teams/${slug}`, { method: "GET" });
 			if (g.ok) {
-				const j = (await g.json()) as { id: number };
+				const j = (await g.json()) as { id: number; slug?: string };
 				await env.KV?.put(`team:id:${org}:${slug}`, String(j.id), {
 					expirationTtl: 86400,
 				});
+				try {
+					await leaveSelfFromTeam(env, org, slug);
+				} catch {}
 				return j.id;
 			}
 		}
 		if (r.status === 429 || r.status === 403 || r.status === 503) {
+			console.error(
+				"gh_create_team_retryable",
+				r.status,
+				org,
+				slug,
+				await respText(r),
+			);
 			await new Promise((res) => setTimeout(res, delay));
 			delay = Math.min(delay * 2, 8000);
 			continue;
 		}
+		console.error(
+			"gh_create_team_error",
+			r.status,
+			org,
+			slug,
+			await respText(r),
+		);
 		throw new Error(`gh_create_team:${r.status}`);
 	}
 	throw new Error("gh_create_team_retry_exhausted");
@@ -82,7 +129,21 @@ export async function ensureTeamIdBySlug(
 		return id;
 	}
 
-	if (r.status === 429 || r.status === 403 || r.status === 503) {
+	if (r.status === 403) {
+		console.error("gh_get_team_403_try_create", org, slug, await respText(r));
+		const id = await createTeam(env, org, slug);
+		await env.KV?.put(k, String(id), { expirationTtl: 86400 });
+		return id;
+	}
+
+	if (r.status === 429 || r.status === 503) {
+		console.error(
+			"gh_get_team_retryable",
+			r.status,
+			org,
+			slug,
+			await respText(r),
+		);
 		let delay = 500;
 		for (let i = 0; i < 4; i++) {
 			await new Promise((res) => setTimeout(res, delay));
@@ -101,6 +162,7 @@ export async function ensureTeamIdBySlug(
 		}
 	}
 
+	console.error("gh_get_team_error", r.status, org, slug, await respText(r));
 	throw new Error(`gh_get_team:${r.status}`);
 }
 
@@ -113,7 +175,16 @@ export async function getTeamIdBySlug(
 	const v = await env.KV?.get(k);
 	if (v) return Number(v);
 	const r = await gh(env, `/orgs/${org}/teams/${slug}`, { method: "GET" });
-	if (!r.ok) throw new Error(`gh_get_team:${r.status}`);
+	if (!r.ok) {
+		console.error(
+			"gh_get_team_error_direct",
+			r.status,
+			org,
+			slug,
+			await respText(r),
+		);
+		throw new Error(`gh_get_team:${r.status}`);
+	}
 	const j = (await r.json()) as { id: number };
 	await env.KV?.put(k, String(j.id), { expirationTtl: 86400 });
 	return j.id;
@@ -133,16 +204,10 @@ export function* expBackoffSeconds(baseSeconds = 60, factor = 2) {
 	}
 }
 
-export type InviteOptions = {
-	maxAttempts?: number;
-	baseDelayMs?: number;
-};
-
 export async function inviteWithTeams(
 	env: Env,
 	org: string,
 	spec: InviteSpec,
-	opts?: InviteOptions,
 ): Promise<{ id: number }> {
 	const ids: number[] = [];
 	for (const s of spec.teamSlugs)
@@ -152,9 +217,9 @@ export async function inviteWithTeams(
 		role: spec.role,
 		team_ids: ids,
 	});
-	const maxAttempts = Math.max(1, opts?.maxAttempts ?? 5);
-	let delay = Math.max(100, opts?.baseDelayMs ?? 500);
-	for (let i = 0; i < maxAttempts; i++) {
+
+	let delay = 500;
+	for (let i = 0; i < 5; i++) {
 		const r = await gh(env, `/orgs/${org}/invitations`, {
 			method: "POST",
 			body,
@@ -167,10 +232,24 @@ export async function inviteWithTeams(
 			r.status === 403 ||
 			r.status === 503
 		) {
+			console.error(
+				"gh_invite_retryable",
+				r.status,
+				org,
+				spec.email,
+				await respText(r),
+			);
 			await new Promise((res) => setTimeout(res, delay));
 			delay = Math.min(delay * 2, 8000);
 			continue;
 		}
+		console.error(
+			"gh_invite_error",
+			r.status,
+			org,
+			spec.email,
+			await respText(r),
+		);
 		throw new Error(`gh_invite:${r.status}`);
 	}
 	throw new Error("gh_invite_retry_exhausted");
