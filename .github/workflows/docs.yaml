@@ -1,0 +1,74 @@
+name: Deploy OpenAPI to Pages
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - "openapi/**"
+      - "package.json"
+      - "pnpm-lock.yaml"
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Ref to deploy (default: current)"
+        required: false
+        default: ""
+      title:
+        description: "Doc title (optional)"
+        required: false
+        default: "UniTN AP APIs"
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages-openapi-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - run: corepack enable
+
+      - run: pnpm install --no-frozen-lockfile
+
+      - run: pnpm oas:lint
+
+      - run: pnpm oas:bundle
+
+      - run: pnpm oas:docs
+
+      - run: |
+          mkdir -p openapi/site
+          cp openapi/docs.html openapi/site/index.html
+          cp openapi/bundle.yaml openapi/site/openapi.yaml
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: openapi/site
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

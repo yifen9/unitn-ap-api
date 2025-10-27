@@ -1,0 +1,61 @@
+{
+	"name": "unitn-ap-api",
+	"private": true,
+	"version": "0.1.0",
+	"type": "module",
+	"scripts": {
+		"lint": "biome check && terraform -chdir=infra/terraform fmt -check -recursive",
+		"format": "biome check --write && terraform -chdir=infra/terraform fmt -write=true -recursive",
+		"test": "vitest run",
+
+		"e2e:dev": "BASE=https://dev.api.ap.unitn.yifen9.li bash ops/scripts/e2e.sh",
+		"e2e:prod": "BASE=https://api.ap.unitn.yifen9.li bash ops/scripts/e2e.sh",
+
+		"build:bundle": "wrangler deploy --dry-run --outdir infra/terraform/build",
+		"tf:init": "terraform -chdir=infra/terraform init -upgrade",
+
+		"tf:plan:dev": "pnpm build:bundle && terraform -chdir=infra/terraform plan -var-file=envs/dev.tfvars",
+		"tf:apply:dev": "pnpm build:bundle && terraform -chdir=infra/terraform apply -var-file=envs/dev.tfvars -auto-approve",
+		"tf:destroy:dev": "terraform -chdir=infra/terraform destroy -var-file=envs/dev.tfvars -auto-approve",
+
+		"tf:output": "terraform -chdir=infra/terraform output",
+
+		"tf:rebuild:dev": "pnpm tf:destroy:dev && pnpm tf:apply:dev",
+
+		"tf:plan:prod": "pnpm build:bundle && terraform -chdir=infra/terraform plan -var-file=envs/prod.tfvars",
+		"tf:apply:prod": "pnpm build:bundle && terraform -chdir=infra/terraform apply -var-file=envs/prod.tfvars -auto-approve",
+		"tf:destroy:prod": "terraform -chdir=infra/terraform destroy -var-file=envs/prod.tfvars -auto-approve",
+
+		"wrangler:sync": "node ops/wrangler/sync.mjs",
+		"db:gen": "drizzle-kit generate",
+		"db:migrate:dev:remote": "pnpm wrangler:sync && wrangler --config wrangler.generated.json d1 migrations apply DB --remote",
+		"db:migrate:prod:remote": "pnpm wrangler:sync && wrangler --config wrangler.generated.json d1 migrations apply DB --remote",
+
+		"queues:bind:dev": "bash ops/scripts/queues-consumer.sh unitn-ap-api-invite-dev unitn-ap-api-dev",
+		"queues:bind:prod": "bash ops/scripts/queues-consumer.sh unitn-ap-api-invite unitn-ap-api",
+
+		"oas:lint": "openapi lint openapi/v1.yaml",
+		"oas:bundle": "openapi bundle openapi/v1.yaml -o openapi/bundle.yaml",
+		"oas:docs": "openapi build-docs openapi/v1.yaml -o openapi/docs.html",
+		"oas:serve": "serve openapi -l 8080",
+		"oas:mock": "prism mock -p 4010 openapi/v1.yaml",
+
+		"dev:local": "BASE_URL=http://localhost:8787 wrangler dev --ip=0.0.0.0",
+		"dev:remote": "wrangler dev --remote --persist-to=.wrangler/state",
+		"tail:dev": "wrangler tail --format=pretty"
+	},
+	"dependencies": {
+		"@biomejs/biome": "^2.2.7",
+		"@cloudflare/vitest-pool-workers": "^0.9.14",
+		"@cloudflare/workers-types": "^4.20251014.0",
+		"@redocly/cli": "^2.7.0",
+		"@stoplight/prism-cli": "^5.14.2",
+		"drizzle-kit": "^0.31.5",
+		"drizzle-orm": "^0.36.4",
+		"hono": "^4.10.2",
+		"serve": "^14.2.5",
+		"typescript": "^5.9.3",
+		"vitest": "^3.2.4",
+		"wrangler": "^4.44.0"
+	}
+}

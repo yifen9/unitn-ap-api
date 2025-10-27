@@ -1,0 +1,209 @@
+openapi: 3.1.0
+info:
+  title: unitn-ap-api
+  version: 0.1.0
+  license:
+    name: MIT
+    identifier: MIT
+servers:
+  - url: https://api.ap.unitn.yifen9.li
+  - url: https://dev.api.ap.unitn.yifen9.li
+security: []
+paths:
+  /v1/healthz:
+    get:
+      summary: Health check
+      operationId: getHealth
+      responses:
+        "200":
+          description: ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                  ts: { type: integer, format: int64 }
+                required: [ok, ts]
+
+  /v1/invitations:
+    post:
+      summary: Create an invitation request
+      operationId: createInvitation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/InvitationCreateRequest" }
+            examples:
+              sample:
+                value:
+                  githubId: yifen9
+                  email: yifeng.li@studenti.unitn.it
+      responses:
+        "202":
+          description: accepted
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/InvitationCreateResponse" }
+              examples:
+                accepted:
+                  value:
+                    id: inv_01JABCDE123456789
+                    status: pending
+                    group: astro-parrots
+                    role: leader
+        "400":
+          description: bad request
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Error" }
+
+  /v1/invitations/{id}/resend:
+    post:
+      summary: Resend verification email
+      operationId: resendInvitationEmail
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "202":
+          description: accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                  verificationUrl: { type: string, format: uri }
+                required: [ok, verificationUrl]
+              examples:
+                accepted:
+                  value:
+                    ok: true
+                    verificationUrl: "https://api.ap.unitn.yifen9.li/v1/invitations/verify?token=..."
+        "404":
+          description: not found
+          content:
+            text/plain:
+              schema: { type: string, example: not_found }
+        "429":
+          description: too many requests
+          content:
+            text/plain:
+              schema: { type: string, example: rate_limited }
+
+  /v1/invitations/verify:
+    get:
+      summary: Verify email token and enqueue invitation
+      operationId: verifyInvitation
+      parameters:
+        - name: token
+          in: query
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: queued
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok: { type: boolean }
+                  id: { type: string }
+                  status: { type: string, enum: [queued] }
+                  verification:
+                    type: object
+                    properties:
+                      verifiedAt: { type: integer, format: int64 }
+                      tokenUsedAt: { type: integer, format: int64 }
+                    required: [verifiedAt, tokenUsedAt]
+                required: [ok, id, status, verification]
+              examples:
+                queued:
+                  value:
+                    ok: true
+                    id: inv_01JABCDE123456789
+                    status: queued
+                    verification:
+                      verifiedAt: 1730000000000
+                      tokenUsedAt: 1730000000000
+        "400":
+          description: invalid or expired token
+          content:
+            text/plain:
+              schema: { type: string, example: bad_request }
+
+  /v1/webhooks/github:
+    post:
+      summary: GitHub organization webhook
+      operationId: githubWebhook
+      parameters:
+        - name: X-GitHub-Event
+          in: header
+          required: true
+          schema: { type: string }
+        - name: X-GitHub-Delivery
+          in: header
+          required: true
+          schema: { type: string }
+        - name: X-Hub-Signature-256
+          in: header
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, additionalProperties: true }
+      responses:
+        "200":
+          description: ok
+          content:
+            text/plain:
+              schema: { type: string, example: ok }
+        "401":
+          description: signature mismatch
+          content:
+            text/plain:
+              schema: { type: string, example: sig }
+        "400":
+          description: bad body
+          content:
+            text/plain:
+              schema: { type: string, example: bad_body }
+
+components:
+  schemas:
+    InvitationCreateRequest:
+      type: object
+      additionalProperties: false
+      properties:
+        githubId: { type: string, minLength: 1 }
+        email:
+          type: string
+          format: email
+          pattern: "^[A-Za-z0-9._%+-]+@studenti\\.unitn\\.it$"
+      required: [githubId, email]
+
+    InvitationCreateResponse:
+      type: object
+      properties:
+        id: { type: string }
+        status: { type: string, enum: [pending] }
+        group: { type: string }
+        role: { type: string, enum: [leader, member] }
+      required: [id, status, group, role]
+
+    Error:
+      type: object
+      properties:
+        code: { type: string }
+        message: { type: string }
+        details:
+          type: object
+          additionalProperties: true
+      required: [code, message]

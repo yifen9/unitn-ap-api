@@ -1,0 +1,6 @@
+{
+	"name": "unitn-ap-api-dev",
+	"main": "src/_worker.ts",
+	"compatibility_date": "2025-10-22",
+	"dev": { "ip": "0.0.0.0" }
+}

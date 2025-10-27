@@ -1,0 +1,4 @@
+.pnpm-store
+.wrangler
+node_modules
+wrangler.generated.json
