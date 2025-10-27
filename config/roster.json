@@ -20,6 +20,193 @@
 				"emanuele.stefani@studenti.unitn.it",
 				"alessandro.bridi-1@studenti.unitn.it"
 			]
+		},
+		{
+			"group": "trip",
+			"leader": "a.faccincani-1@studenti.unitn.it",
+			"members": [
+				"a.faccincani-1@studenti.unitn.it",
+				"mario.mazzara@studenti.unitn.it",
+				"matteo.benincasa@studenti.unitn.it",
+				"cristian.fiorina@studenti.unitn.it"
+			]
+		},
+		{
+			"group": "stargazers",
+			"leader": "vincenzo.lippo@studenti.unitn.it",
+			"members": [
+				"vincenzo.lippo@studenti.unitn.it",
+				"burakcan.arikan@studenti.unitn.it",
+				"sara.ferrari@studenti.unitn.it",
+				"ahmed.lotfy@studenti.unitn.it"
+			]
+		},
+		{
+			"group": "the-compiler-strikes-back",
+			"leader": "riccardo.speretta@studenti.unitn.it",
+			"members": [
+				"riccardo.speretta@studenti.unitn.it",
+				"luca.prigione@studenti.unitn.it",
+				"goran.devetak@studenti.unitn.it",
+				"raffaele.modroni@studenti.unitn.it"
+			]
+		},
+		{
+			"group": "crabtorio",
+			"leader": "lorenzo.meduri@studenti.unitn.it",
+			"members": [
+				"lorenzo.meduri@studenti.unitn.it",
+				"luca.fiorini@studenti.unitn.it",
+				"alessio.zanon@studenti.unitn.it",
+				"yifeng.li@studenti.unitn.it"
+			]
+		},
+		{
+			"group": "black-adidas-shoe",
+			"leader": "giovanni.sbalchiero@studenti.unitn.it",
+			"members": [
+				"giovanni.sbalchiero@studenti.unitn.it",
+				"luca.dariz-1@studenti.unitn.it",
+				"alessandro.omati@studenti.unitn.it",
+				"leonardo.silvestri-1@studenti.unitn.it"
+			]
+		},
+		{
+			"group": "enterprise",
+			"leader": "jiahang.liang@studenti.unitn.it",
+			"members": [
+				"jiahang.liang@studenti.unitn.it",
+				"andrea.balasso-1@studenti.unitn.it",
+				"thomasmaria.carollo@studenti.unitn.it",
+				"maria.tosettiguerra@studenti.unitn.it"
+			]
+		},
+		{
+			"group": "immutable-cosmic-borrow",
+			"leader": "jacopoandrea.mazza@studenti.unitn.it",
+			"members": [
+				"jacopoandrea.mazza@studenti.unitn.it",
+				"serena.federici@studenti.unitn.it",
+				"roberto.scoz@studenti.unitn.it",
+				"nicola.altobel@studenti.unitn.it"
+			]
+		},
+		{
+			"group": "luna4",
+			"leader": "lv.buitronzambrano@studenti.unitn.it",
+			"members": [
+				"lv.buitronzambrano@studenti.unitn.it",
+				"viviana.fraccaroli@studenti.unitn.it",
+				"sebastian.ceolato@studenti.unitn.it",
+				"trisha.agrawal@studenti.unitn.it"
+			]
+		},
+		{
+			"group": "orbitron",
+			"leader": "munkhdul.dorjderem@studenti.unitn.it",
+			"members": [
+				"munkhdul.dorjderem@studenti.unitn.it",
+				"dalaitseren.ganbold@studenti.unitn.it",
+				"t.javkhlanbaatar@studenti.unitn.it",
+				"u.myagmarsuren@studenti.unitn.it"
+			]
+		},
+		{
+			"group": "one-million-crabs",
+			"leader": "marco.adami-3@studenti.unitn.it",
+			"members": [
+				"marco.adami-3@studenti.unitn.it",
+				"davide.dacol@studenti.unitn.it",
+				"mattia.pistollato@studenti.unitn.it",
+				"tommaso.ascolani@studenti.unitn.it"
+			]
+		},
+		{
+			"group": "rusteroids",
+			"leader": "francesco.verdolin@studenti.unitn.it",
+			"members": [
+				"francesco.verdolin@studenti.unitn.it",
+				"riccardo.ferro-2@studenti.unitn.it",
+				"federico.valsecchi@studenti.unitn.it",
+				"nikopetteri.vattula@studenti.unitn.it"
+			]
+		},
+		{
+			"group": "no-crustacean-s-sky",
+			"leader": "marco.keppel@studenti.unitn.it",
+			"members": [
+				"marco.keppel@studenti.unitn.it",
+				"eric.marin@studenti.unitn.it",
+				"lorenzo.brigo@studenti.unitn.it",
+				"filippo.protto@studenti.unitn.it"
+			]
+		},
+		{
+			"group": "skycartel",
+			"leader": "daulet.tlegenov@studenti.unitn.it",
+			"members": [
+				"daulet.tlegenov@studenti.unitn.it",
+				"navjot.kaur@studenti.unitn.it",
+				"othmane.ouledbyi@studenti.unitn.it"
+			]
+		},
+		{
+			"group": "panic-out-of-oxygen",
+			"leader": "davide.benetti@studenti.unitn.it",
+			"members": [
+				"davide.benetti@studenti.unitn.it",
+				"vincenzo.bove@studenti.unitn.it",
+				"michele.ronzoni@studenti.unitn.it",
+				"daniele.mattuzzi@studenti.unitn.it"
+			]
+		},
+		{
+			"group": "houston-we-have-a-borrow",
+			"leader": "matteo.ballardin@studenti.unitn.it",
+			"members": [
+				"matteo.ballardin@studenti.unitn.it",
+				"riccardo.finello@studenti.unitn.it",
+				"francesco.fanton@studenti.unitn.it",
+				"mirko.cecchinato@studenti.unitn.it"
+			]
+		},
+		{
+			"group": "rust2",
+			"leader": "andrea.pollini@studenti.unitn.it",
+			"members": [
+				"andrea.pollini@studenti.unitn.it",
+				"alessandro.belotti@studenti.unitn.it",
+				"christian.baciu@studenti.unitn.it"
+			]
+		},
+		{
+			"group": "rust-eze",
+			"leader": "emilio.leonardi@studenti.unitn.it",
+			"members": [
+				"emilio.leonardi@studenti.unitn.it",
+				"federico.santin@studenti.unitn.it",
+				"giacomo.berti@studenti.unitn.it",
+				"lorenzo.debiasi-1@studenti.unitn.it"
+			]
+		},
+		{
+			"group": "ciuc",
+			"leader": "pietro.calvi@studenti.unitn.it",
+			"members": [
+				"pietro.calvi@studenti.unitn.it",
+				"cristian.cazzaniga@studenti.unitn.it",
+				"nicola.bancher@studenti.unitn.it"
+			]
+		},
+		{
+			"group": "rustycrab",
+			"leader": "antonio.farese@studenti.unitn.it",
+			"members": [
+				"antonio.farese@studenti.unitn.it",
+				"samuele.facenda@studenti.unitn.it",
+				"thomas.cetto@studenti.unitn.it",
+				"niccolo.eccel@studenti.unitn.it"
+			]
 		}
 	]
 }
