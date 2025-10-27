@@ -1,6 +1,28 @@
 {
 	"org": "unitn-ap-2025",
-	"groups": ["test", "cargonauts", "astro-parrots"],
+	"groups": [
+		"cargonauts",
+		"astro-parrots",
+		"trip",
+		"stargazers",
+		"the-compiler-strikes-back",
+		"crabtorio",
+		"black-adidas-shoe",
+		"enterprise",
+		"immutable-cosmic-borrow",
+		"luna4",
+		"orbitron",
+		"one-million-crabs",
+		"rusteroids",
+		"no-crustacean-s-sky",
+		"skycartel",
+		"panic-out-of-oxygen",
+		"houston-we-have-a-borrow",
+		"rust2",
+		"rust-eze",
+		"ciuc",
+		"rustycrab"
+	],
 	"roleTeams": { "leader": "leader", "member": "member" },
 	"groupPrefix": "wg-"
 }
