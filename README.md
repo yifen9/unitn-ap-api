@@ -20,15 +20,15 @@ This is an auto inviter to invite members into this org, and to settle them team
 
 To be specific, for example, if you are a team leader of team "Test", then you would be invited into a team called "leader" and a team called "wg-test". In another case, a normal member of "Test" would be invited into team "member" and team "wg-test".
 
-For the complete roster, please check [/config/roster.json](https://github.com/unitn-ap-2025/blob/main/config/roster.json).
+For the complete roster, please check [/config/roster.json](https://github.com/unitn-ap-2025/api/blob/main/config/roster.json).
 
->WARNING: Because the prof disabled copy & paste in the Telegram Group, I can only type in the roster manually by vibing and there might be a mistake, so I would recommend you to check the [/config/roster.json](https://github.com/unitn-ap-2025/blob/main/config/roster.json) first to make sure.
+>WARNING: Because the prof disabled copy & paste in the Telegram Group, I can only type in the roster manually by vibing and there might be a mistake, so I would recommend you to check the [/config/roster.json](https://github.com/unitn-ap-2025/api/blob/main/config/roster.json) first to make sure.
 
 #### Usage
 
 ##### Via Scripts (Easy Mode)
 
-1. Depending on your OS (.sh for Linux and .cmd for Windows), download the inviter script (found in [/ops/scripts](https://github.com/unitn-ap-2025/blob/main/ops/scripts)) and run it. It requires you to have [curl](https://curl.se) and [jq](https://jqlang.org) (and normally they are installed by default or just too commonly used).
+1. Depending on your OS (.sh for Linux and .cmd for Windows), download the inviter script (found in [/ops/scripts](https://github.com/unitn-ap-2025/api/blob/main/ops/scripts)) and run it. It requires you to have [curl](https://curl.se) and [jq](https://jqlang.org) (and normally they are installed by default or just too commonly used).
 2. Follow the instructions the script provides you. It would require your GitHub ID and your E-mail address (@studenti.unitn.it), and send you a link.
 3. Check the inbox of your E-mail, potentially in the "spam" folder, you should be able to find an E-mail from "no-reply@yifen9.li" titled "UniTN AP 2025".
 4. Click the link showed on that E-mail, and you should see a JSON message saying that your request has been queued.
